@@ -50,14 +50,14 @@ func readSingleChunck(r *bytes.Reader) (Chunk, error) {
 	// read chunk data length
 	err := binary.Read(r, binary.BigEndian, &newChunk.size)
 	if err != nil {
-		fmt.Println("[ParsePNG]: failed to read PNG file: ", err)
+		fmt.Println("[readSingleChunck]: failed to read PNG chunk size: ", err)
 		return newChunk, err
 	}
 
 	// read chunk type
 	err = binary.Read(r, binary.BigEndian, &newChunk.chunkType)
 	if err != nil {
-		fmt.Println("[ParsePNG]: failed to read PNG file: ", err)
+		fmt.Println("[readSingleChunck]: failed to read PNG chunk type: ", err)
 		return newChunk, err
 	}
 
@@ -65,13 +65,13 @@ func readSingleChunck(r *bytes.Reader) (Chunk, error) {
 	// read chunk data
 	err = binary.Read(r, binary.BigEndian, &newChunk.data)
 	if err != nil {
-		fmt.Println("[ParsePNG]: failed to read PNG file: ", err)
+		fmt.Println("[readSingleChunck]: failed to read PNG chunk data: ", err)
 		return newChunk, err
 	}
 	// read chunk CRC
 	err = binary.Read(r, binary.BigEndian, &newChunk.crc)
 	if err != nil {
-		fmt.Println("[ParsePNG]: failed to read PNG file: ", err)
+		fmt.Println("[readSingleChunck]: failed to read PNG crc: ", err)
 		return newChunk, err
 	}
 
@@ -87,7 +87,6 @@ func readChunks(r *bytes.Reader) ([]Chunk, error) {
 			return chunks, err
 		}
 		chunks = append(chunks, newChunk)
-
 		if bytes.Equal(i32ToB(newChunk.chunkType), typeIEND) {
 			break
 		}
