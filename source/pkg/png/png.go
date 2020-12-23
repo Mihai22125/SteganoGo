@@ -87,10 +87,18 @@ func readChunks(r *bytes.Reader) ([]Chunk, error) {
 			return chunks, err
 		}
 		chunks = append(chunks, newChunk)
-		if bytes.Equal(i32ToB(newChunk.chunkType), typeIEND) {
+		if bytes.Equal(i32ToB(newChunk.chunkType), TypeIEND) {
 			break
 		}
 	}
 
 	return chunks, nil
+}
+
+// CompareType returns true if chunk type equals given type
+func (ch Chunk) CompareType(chType []byte) bool {
+	if bytes.Equal(i32ToB(ch.chunkType), chType) {
+		return true
+	}
+	return false
 }
