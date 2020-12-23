@@ -45,3 +45,6 @@ func (c Chunk) GetChunkData() []byte {
 }
 
 // GetChunkCRC return chunk CRC
+func (c Chunk) GetChunkCRC() uint32 {
+	return c.crc
+}
