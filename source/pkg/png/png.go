@@ -44,6 +44,7 @@ func checkPNG(header []byte) bool {
 	return false
 }
 
+// readSingleChunck read the next chunk from png data
 func readSingleChunck(r *bytes.Reader) (Chunk, error) {
 	newChunk := Chunk{}
 
@@ -78,6 +79,7 @@ func readSingleChunck(r *bytes.Reader) (Chunk, error) {
 	return newChunk, nil
 }
 
+// readChunks read png chunks and returns a slice of Chunk
 func readChunks(r *bytes.Reader) ([]Chunk, error) {
 	chunks := []Chunk{}
 
@@ -101,4 +103,30 @@ func (ch Chunk) CompareType(chType []byte) bool {
 		return true
 	}
 	return false
+}
+
+// IHDRChunk returns png IHDR chunk
+func (p StructPNG) IHDRChunk() (Chunk, error) {
+	for _, chunk := range p.Chunks() {
+		if chunk.CompareType(TypeIHDR) == true {
+			return chunk, nil
+		}
+	}
+	return Chunk{}, ErrIHDRMissing
+}
+
+// IDATChunks returns a slice of found IDAT chunks
+func (p StructPNG) IDATChunks() ([]Chunk, error) {
+	idat := []Chunk{}
+
+	for _, chunk := range p.Chunks() {
+		if chunk.CompareType(TypeIDAT) == true {
+			idat = append(idat, chunk)
+		}
+	}
+	if len(idat) == 0 {
+		return nil, ErrIDATMissing
+	}
+
+	return idat, nil
 }
