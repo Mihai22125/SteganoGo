@@ -19,32 +19,32 @@ type StructPNG struct {
 	chunks []Chunk
 }
 
-// GetPNGHeader return png header
-func (p StructPNG) GetPNGHeader() Header {
+// Header return png header
+func (p StructPNG) Header() Header {
 	return p.header
 }
 
-// GetPNGChunks return a slice of chunks
-func (p StructPNG) GetPNGChunks() []Chunk {
+// Chunks return a slice of chunks
+func (p StructPNG) Chunks() []Chunk {
 	return p.chunks
 }
 
-// GetChunkSize return chunk size
-func (c Chunk) GetChunkSize() uint32 {
+// Size return chunk size
+func (c Chunk) Size() uint32 {
 	return c.size
 }
 
-// GetChunkType return chunk type
-func (c Chunk) GetChunkType() uint32 {
+// ChunkType return chunk type
+func (c Chunk) ChunkType() uint32 {
 	return c.chunkType
 }
 
-// GetChunkData return chunk data
-func (c Chunk) GetChunkData() []byte {
+// Data return chunk data
+func (c Chunk) Data() []byte {
 	return c.data
 }
 
-// GetChunkCRC return chunk CRC
-func (c Chunk) GetChunkCRC() uint32 {
+// CRC return chunk CRC
+func (c Chunk) CRC() uint32 {
 	return c.crc
 }
