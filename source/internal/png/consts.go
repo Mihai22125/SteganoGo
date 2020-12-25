@@ -1,20 +1,38 @@
 package pngint
 
-// png compression method
+// CompressionMethod png compression method
+type CompressionMethod uint8
+
+// InterlaceMethod png interlace method
+type InterlaceMethod uint8
+
+// ImgType png image types
+type ImgType uint8
+
 // ComprDeflate compression method 0
 // deflate/inflate compression with a sliding window of at most 32768 bytes
-const ComprDeflate uint8 = 0
+const ComprDeflate CompressionMethod = 0
 
-// png filter method
-const FilterAdaptive uint8 = 0 // adaptive filtering with five basic filter types
+// FilterAdaptive png filter method
+const FilterAdaptive CompressionMethod = 0 // adaptive filtering with five basic filter types
 
-// png interlace method
-const NoInterlace uint8 = 0    // no interlace
-const InterlaceAdam7 uint8 = 1 // Adam7 interlace
+// NoInterlace no interlace
+const NoInterlace InterlaceMethod = 0
 
-// png image types
-const GrayscalePNG uint8 = 0          // each pixel is a grayscale sample
-const TruecolorPNG uint8 = 2          // each pixel is a R,G,B triple
-const IndexedColorPNG uint8 = 3       // each pixel is a palette index; a PLTE chunk shall appear
-const GrayscaleWithAlphaPNG uint8 = 4 // each pixel is a grayscale sample followed by an alpha sample
-const TruecolorWithAlphaPNG uint8 = 6 // each pixel is a R,G,B triple followed by an alpha sample
+// InterlaceAdam7 Adam7 interlace
+const InterlaceAdam7 InterlaceMethod = 1
+
+// Grayscale each pixel is a grayscale sample
+const Grayscale ImgType = 0
+
+// Truecolor each pixel is a R,G,B triple
+const Truecolor ImgType = 2
+
+// IndexedColor each pixel is a palette index; a PLTE chunk shall appear
+const IndexedColor ImgType = 3
+
+// GrayscaleWithAlpha each pixel is a grayscale sample followed by an alpha sample
+const GrayscaleWithAlpha ImgType = 4
+
+// TruecolorWithAlpha each pixel is a R,G,B triple followed by an alpha sample
+const TruecolorWithAlpha ImgType = 6
