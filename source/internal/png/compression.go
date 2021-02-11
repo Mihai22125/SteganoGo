@@ -7,7 +7,7 @@ import (
 )
 
 // DecompressPNGData returns decompressed data based on given method
-func DecompressPNGData(data []byte, method uint8) ([]byte, error) {
+func DecompressPNGData(data []byte, method CompressionMethod) ([]byte, error) {
 
 	decompressed := []byte{}
 	var err error
@@ -46,7 +46,7 @@ func deflate(data []byte) ([]byte, error) {
 }
 
 // CompressPNGData returns compressed data based on given method
-func CompressPNGData(data []byte, method uint8) ([]byte, error) {
+func CompressPNGData(data []byte, method CompressionMethod) ([]byte, error) {
 
 	compressed := []byte{}
 
@@ -61,7 +61,7 @@ func CompressPNGData(data []byte, method uint8) ([]byte, error) {
 	return compressed, nil
 }
 
-// deflate : method 0 - DEFLATE/INFLATE compression
+// inflate : method 0 - DEFLATE/INFLATE compression
 func inflate(data []byte) ([]byte, error) {
 	compressed := []byte{}
 	var reader bytes.Buffer
