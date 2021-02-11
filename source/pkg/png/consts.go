@@ -6,15 +6,15 @@ var pngHeader = []byte{137, 80, 78, 71, 13, 10, 26, 10}
 
 // Critical chunk types
 
-// must be the first chunk
+// TypeIHDR must be the first chunk
 var TypeIHDR = []byte("IHDR")
 
-//  contains the palette: a list of colors
+// TypePLTE contains the palette: a list of colors
 var TypePLTE = []byte("PLTE")
 
-// contains the image, which may be split among multiple IDAT chunks
+// TypeIDAT contains the image, which may be split among multiple IDAT chunks
 // The IDAT chunk contains the actual image data, which is the output stream of the compression algorithm
 var TypeIDAT = []byte("IDAT")
 
-// marks the image end; the data field of the IEND chunk has 0 bytes/is empty
+// TypeIEND marks the image end; the data field of the IEND chunk has 0 bytes/is empty
 var TypeIEND = []byte("IEND")
