@@ -16,3 +16,6 @@ var ErrBadSizeIHDR error = errors.New("IHDR chunk data size is not accepted")
 
 // ErrBadIHDR ..
 var ErrBadIHDR error = errors.New("IHDR chunk data is not accepted")
+
+// ErrOutOfBoundsPixel given pixel is out of bounds
+var ErrOutOfBoundsPixel error = errors.New("Pixel is out of bounds")
