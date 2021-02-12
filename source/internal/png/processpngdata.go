@@ -40,17 +40,12 @@ func (pngImg *pngImage) processIHDR(ihdrData []byte) error {
 	meta.height = binary.LittleEndian.Uint32(buf)
 	meta.bitDepth = ihdrData[8]
 	meta.colorType = ColorType(ihdrData[9])
-	meta.compressionMethod = ihdrData[10]
-	meta.filterMethod = ihdrData[11]
-	meta.interlaceMethod = ihdrData[12]
+	meta.compressionMethod = CompressionMethod(ihdrData[10])
+	meta.filterMethod = FiltMethod(ihdrData[11])
+	meta.interlaceMethod = InterlaceMethod(ihdrData[12])
 
 	pngImg.meta = meta
 	return nil
-}
-
-// newRecon return an empty recon
-func newRecon() recon {
-	return recon{}
 }
 
 // bytesPerPixel retun bytes per pixel based on color type
@@ -72,26 +67,26 @@ func (pngImg *pngImage) stride() uint32 {
 	return pngImg.meta.width * uint32(pngImg.bytesPerPixel())
 }
 
-// A is the byte corresponding to x in the pixel immediately before the pixel containing x
-func (pngImg *pngImage) reconA(scanLine uint32, byteIndex uint8, bytesPerPixel uint8, stride uint32) (uint8, error) {
-	if byteIndex >= bytesPerPixel {
-		return pngImg.data[scanLine*stride+uint32(byteIndex-bytesPerPixel)], nil
+func (pngImg *pngImage) ProcessData(stpng *png.StructPNG) error {
+	IDATdata, err := stpng.IDATdata()
+	if err != nil {
+		return err
 	}
-	return 0, ErrOutOfBoundsPixel
-}
 
-// B is the byte corresponding to x in the previous scanline
-func (pngImg *pngImage) reconB(scanLine uint32, byteIndex uint8, stride uint32) (uint8, error) {
-	if scanLine > 0 {
-		return pngImg.data[(scanLine-1)*stride+uint32(byteIndex)], nil
+	// decompress png data
+	decompressed, err := DecompressPNGData(IDATdata, pngImg.meta.compressionMethod)
+	if err != nil {
+		return err
 	}
-	return 0, ErrOutOfBoundsPixel
-}
 
-// C is the byte corresponding to b in the pixel immediately before the pixel containing b
-func (pngImg *pngImage) reconC(scanLine uint32, byteIndex uint8, bytesPerPixel uint8, stride uint32) (uint8, error) {
-	if scanLine > 0 && byteIndex >= bytesPerPixel {
-		return pngImg.data[(scanLine-1)*stride+uint32(byteIndex-bytesPerPixel)], nil
-	}
-	return 0, ErrOutOfBoundsPixel
+	// reconstruct holds reconstructed png pixels
+	reconstruct := newRecon(pngImg.bytesPerPixel(), uint8(pngImg.stride()), pngImg.meta.height)
+
+	// defilter uncompressed data
+	reconstruct.reconstruct(decompressed)
+
+	// assign processed data to png struct
+	pngImg.data = reconstruct.recon
+	return nil
+
 }
