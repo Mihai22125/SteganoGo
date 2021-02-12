@@ -130,3 +130,19 @@ func (p StructPNG) IDATChunks() ([]Chunk, error) {
 
 	return idat, nil
 }
+
+// IDATdata returns IDAT chunks concatenated in a single slice of bytes
+func (p *StructPNG) IDATdata() ([]byte, error) {
+	data := []byte{}
+
+	IDATChunks, err := p.IDATChunks()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, chunk := range IDATChunks {
+		data = append(data, chunk.data...)
+	}
+
+	return data, nil
+}
