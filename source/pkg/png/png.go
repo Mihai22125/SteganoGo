@@ -23,6 +23,9 @@ func ParsePNG(r *bytes.Reader) (StructPNG, error) {
 	if len != 8 {
 		return newPNG, ErrBadPNG
 	}
+
+	newPNG.header = Header{buf}
+
 	// check if file is indeed an PNG file
 	if checkPNG(buf) == false {
 		return newPNG, ErrNotPNG
@@ -56,11 +59,13 @@ func readSingleChunck(r *bytes.Reader) (Chunk, error) {
 	}
 
 	// read chunk type
-	err = binary.Read(r, binary.BigEndian, &newChunk.chunkType)
+	buf := make([]byte, 4)
+	_, err = r.Read(buf)
 	if err != nil {
 		fmt.Println("[readSingleChunck]: failed to read PNG chunk type: ", err)
 		return newChunk, err
 	}
+	newChunk.chunkType = string(buf)
 
 	newChunk.data = make([]byte, newChunk.size)
 	// read chunk data
@@ -89,7 +94,7 @@ func readChunks(r *bytes.Reader) ([]Chunk, error) {
 			return chunks, err
 		}
 		chunks = append(chunks, newChunk)
-		if bytes.Equal(i32ToB(newChunk.chunkType), TypeIEND) {
+		if newChunk.chunkType == TypeIEND {
 			break
 		}
 	}
@@ -98,8 +103,8 @@ func readChunks(r *bytes.Reader) ([]Chunk, error) {
 }
 
 // CompareType returns true if chunk type equals given type
-func (ch Chunk) CompareType(chType []byte) bool {
-	if bytes.Equal(i32ToB(ch.chunkType), chType) {
+func (ch Chunk) CompareType(chType string) bool {
+	if ch.chunkType == chType {
 		return true
 	}
 	return false

@@ -1,14 +1,16 @@
 package png
 
+import "encoding/json"
+
 // Header : a PNG file starts with an 8-byte signature
 type Header struct {
-	header uint64
+	signature []byte
 }
 
 // Chunk conveys certain information about the image
 type Chunk struct {
 	size      uint32
-	chunkType uint32
+	chunkType string
 	data      []byte
 	crc       uint32
 }
@@ -35,7 +37,7 @@ func (c Chunk) Size() uint32 {
 }
 
 // ChunkType return chunk type
-func (c Chunk) ChunkType() uint32 {
+func (c Chunk) ChunkType() string {
 	return c.chunkType
 }
 
@@ -47,4 +49,51 @@ func (c Chunk) Data() []byte {
 // CRC return chunk CRC
 func (c Chunk) CRC() uint32 {
 	return c.crc
+}
+
+// MarshalJSON custom MarshalJSON for Header struct
+func (h Header) MarshalJSON() ([]byte, error) {
+	j, err := json.Marshal(struct {
+		Signature []byte `json:"signature"`
+	}{
+		Signature: h.signature,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return j, nil
+}
+
+// MarshalJSON custom MarshalJSON for Header struct
+func (c Chunk) MarshalJSON() ([]byte, error) {
+	j, err := json.Marshal(struct {
+		Size      uint32 `json:"size"`
+		ChunkType string `json:"chunk_type"`
+		Data      []byte `json:"data,omitempty"`
+		Crc       uint32 `json:"crc"`
+	}{
+		Size:      c.size,
+		ChunkType: c.chunkType,
+		Data:      c.data,
+		Crc:       c.crc,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return j, nil
+}
+
+// MarshalJSON custom MarshalJSON for Header struct
+func (p StructPNG) MarshalJSON() ([]byte, error) {
+	j, err := json.Marshal(struct {
+		Header Header  `json:"header"`
+		Chunks []Chunk `json:"chunks"`
+	}{
+		Header: p.header,
+		Chunks: p.chunks,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return j, nil
 }
