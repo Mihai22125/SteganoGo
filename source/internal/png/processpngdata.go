@@ -3,7 +3,10 @@ package pngint
 import (
 	"encoding/binary"
 	"fmt"
+	"log"
+	"os"
 
+	"github.com/Mihai22125/SteganoGo/pkg/fileutils"
 	"github.com/Mihai22125/SteganoGo/pkg/png"
 )
 
@@ -67,6 +70,23 @@ func (pngImg *pngImage) stride() uint32 {
 	return pngImg.meta.width * uint32(pngImg.bytesPerPixel())
 }
 
+// Unfilter
+func (pngImg *pngImage) Unfilter(decompressed []byte) error {
+	// r holds reconstructed png pixels
+	r := newRecon(pngImg.bytesPerPixel(), uint8(pngImg.stride()), pngImg.meta.height)
+
+	// defilter uncompressed data
+	err := r.reconstruct(decompressed)
+	if err != nil {
+		return err
+	}
+
+	// assign processed data to png struct
+	pngImg.data = r.recon
+	return nil
+}
+
+// ProcessData consumes an png.StructPNG and it processes png data
 func (pngImg *pngImage) ProcessData(stpng *png.StructPNG) error {
 	IDATdata, err := stpng.IDATdata()
 	if err != nil {
@@ -79,14 +99,32 @@ func (pngImg *pngImage) ProcessData(stpng *png.StructPNG) error {
 		return err
 	}
 
-	// reconstruct holds reconstructed png pixels
-	reconstruct := newRecon(pngImg.bytesPerPixel(), uint8(pngImg.stride()), pngImg.meta.height)
+	err = pngImg.Unfilter(decompressed)
+	if err != nil {
+		return err
+	}
 
-	// defilter uncompressed data
-	reconstruct.reconstruct(decompressed)
-
-	// assign processed data to png struct
-	pngImg.data = reconstruct.recon
 	return nil
+}
+
+func (pngImg *pngImage) ProcessImage(path string) {
+	file, err := os.Open("file.go") // For read access.
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	buf, err := fileutils.PreProcessFile(file)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	pngData, err := png.ParsePNG(buf)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	newPNGImage := pngImage{}
+
+	newPNGImage.ProcessData(&pngData)
 
 }
