@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 // PreProcessFile consume a file handle of type *os.File and return a type of *bytes.Reader
@@ -25,4 +27,9 @@ func PreProcessFile(dat *os.File) (*bytes.Reader, error) {
 	bReader := bytes.NewReader(b)
 
 	return bReader, nil
+}
+
+// FileNameWithoutWxtension returns filename without extension
+func FileNameWithoutExtension(fileName string) string {
+	return strings.TrimSuffix(fileName, filepath.Ext(fileName))
 }
