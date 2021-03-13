@@ -4,12 +4,28 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"os"
+
+	"github.com/Mihai22125/SteganoGo/pkg/fileutils"
 )
 
 // package with functions used for parsing PNG files
 
-// ParsePNG extracts data from PNG file into a struct
-func ParsePNG(r *bytes.Reader) (StructPNG, error) {
+// ParsePNG consumes an os.File and extracts PNG raw data from it
+func ParsePNG(dat *os.File) (StructPNG, error) {
+	png := StructPNG{}
+	bReader, err := fileutils.PreProcessFile(dat)
+	if err != nil {
+		return png, err
+	}
+
+	png, err = parsePNG(bReader)
+
+	return png, err
+}
+
+// parsePNG consumes a bytes.Reader and returns PNG structure
+func parsePNG(r *bytes.Reader) (StructPNG, error) {
 	newPNG := StructPNG{}
 
 	buf := make([]byte, 8)

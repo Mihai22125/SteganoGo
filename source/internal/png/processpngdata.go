@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/Mihai22125/SteganoGo/pkg/fileutils"
 	"github.com/Mihai22125/SteganoGo/pkg/png"
 )
 
@@ -112,13 +111,13 @@ func (pngImg *pngImage) ProcessImage(path string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	buf, err := fileutils.PreProcessFile(file)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	pngData, err := png.ParsePNG(buf)
+	/*
+		buf, err := fileutils.PreProcessFile(file)
+		if err != nil {
+			log.Fatal(err)
+		}
+	*/
+	pngData, err := png.ParsePNG(file)
 	if err != nil {
 		log.Fatal(err)
 	}
