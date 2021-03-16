@@ -1,0 +1,30 @@
+{
+  "header": {
+    "signature": "iVBORw0KGgo="
+  },
+  "chunks": [
+    {
+      "size": 13,
+      "chunk_type": "IHDR",
+      "data": "AAAAIAAAACAIAAAAAA==",
+      "crc": 1443964200
+    },
+    {
+      "size": 4,
+      "chunk_type": "gAMA",
+      "data": "AAGGoA==",
+      "crc": 837326431
+    },
+    {
+      "size": 65,
+      "chunk_type": "IDAT",
+      "data": "eJxjZGAkABQIyLMMBQWMDwgp+PcfP2B5MBwUMMoRkGdkonlcDAYFjI/wyv7/z/iH5nExGBQwyuCVZWQEAFDl/nE=",
+      "crc": 904058969
+    },
+    {
+      "size": 0,
+      "chunk_type": "IEND",
+      "crc": 2923585666
+    }
+  ]
+}
