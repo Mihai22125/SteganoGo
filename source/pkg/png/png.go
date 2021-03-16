@@ -32,24 +32,21 @@ func parsePNG(r *bytes.Reader) (StructPNG, error) {
 
 	// read file header
 	len, err := r.Read(buf)
-	if err != nil {
+	if err != nil || len != 8 {
 		fmt.Println("[ParsePNG]: failed to read PNG file: ", err)
-		return newPNG, err
-	}
-	if len != 8 {
-		return newPNG, ErrBadPNG
+		return EmptyPNG, ErrBadPNG
 	}
 
 	newPNG.header = Header{buf}
 
 	// check if file is indeed an PNG file
 	if checkPNG(buf) == false {
-		return newPNG, ErrNotPNG
+		return EmptyPNG, ErrNotPNG
 	}
 
 	newPNG.chunks, err = readChunks(r)
 	if err != nil {
-		return newPNG, err
+		return EmptyPNG, ErrPNGChunks
 	}
 
 	return newPNG, nil
@@ -70,31 +67,28 @@ func readSingleChunck(r *bytes.Reader) (Chunk, error) {
 	// read chunk data length
 	err := binary.Read(r, binary.BigEndian, &newChunk.size)
 	if err != nil {
-		fmt.Println("[readSingleChunck]: failed to read PNG chunk size: ", err)
-		return newChunk, err
+		return Chunk{}, err
 	}
 
 	// read chunk type
 	buf := make([]byte, 4)
-	_, err = r.Read(buf)
+	err = binary.Read(r, binary.BigEndian, buf)
 	if err != nil {
-		fmt.Println("[readSingleChunck]: failed to read PNG chunk type: ", err)
-		return newChunk, err
+		return Chunk{}, err
 	}
 	newChunk.chunkType = string(buf)
 
 	newChunk.data = make([]byte, newChunk.size)
+
 	// read chunk data
 	err = binary.Read(r, binary.BigEndian, &newChunk.data)
 	if err != nil {
-		fmt.Println("[readSingleChunck]: failed to read PNG chunk data: ", err)
-		return newChunk, err
+		return Chunk{}, err
 	}
 	// read chunk CRC
 	err = binary.Read(r, binary.BigEndian, &newChunk.crc)
 	if err != nil {
-		fmt.Println("[readSingleChunck]: failed to read PNG crc: ", err)
-		return newChunk, err
+		return Chunk{}, err
 	}
 
 	return newChunk, nil
@@ -116,14 +110,6 @@ func readChunks(r *bytes.Reader) ([]Chunk, error) {
 	}
 
 	return chunks, nil
-}
-
-// CompareType returns true if chunk type equals given type
-func (ch Chunk) CompareType(chType string) bool {
-	if ch.chunkType == chType {
-		return true
-	}
-	return false
 }
 
 // IHDRChunk returns png IHDR chunk

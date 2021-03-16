@@ -18,3 +18,5 @@ var TypeIDAT = "IDAT"
 
 // TypeIEND marks the image end; the data field of the IEND chunk has 0 bytes/is empty
 var TypeIEND = "IEND"
+
+var EmptyPNG = StructPNG{}

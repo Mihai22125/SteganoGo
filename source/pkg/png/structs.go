@@ -31,26 +31,6 @@ func (p StructPNG) Chunks() []Chunk {
 	return p.chunks
 }
 
-// Size return chunk size
-func (c Chunk) Size() uint32 {
-	return c.size
-}
-
-// ChunkType return chunk type
-func (c Chunk) ChunkType() string {
-	return c.chunkType
-}
-
-// Data return chunk data
-func (c Chunk) Data() []byte {
-	return c.data
-}
-
-// CRC return chunk CRC
-func (c Chunk) CRC() uint32 {
-	return c.crc
-}
-
 // MarshalJSON custom MarshalJSON for Header struct
 func (h Header) MarshalJSON() ([]byte, error) {
 	j, err := json.Marshal(struct {
