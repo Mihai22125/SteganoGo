@@ -54,14 +54,13 @@ func (c *Compressor) deflate(data []byte) ([]byte, error) {
 // CompressPNGData returns compressed data based on given method
 func (c *Compressor) CompressPNGData(data []byte, method CompressionMethod) ([]byte, error) {
 
-	compressed := []byte{}
-
 	if method != ComprDeflate {
 		return nil, ErrNotSupportedPNG
 	}
-	// TODO: add functionality for compressing PNG data
-	if method == ComprDeflate {
 
+	compressed, err := c.inflate(data)
+	if err != nil {
+		return nil, err
 	}
 
 	return compressed, nil
