@@ -145,6 +145,7 @@ func (s *MySuite) TestparsePNG(c *C) {
 
 			testFile, err := os.Open(path.Join(sp.testDir, testCase.fileName) + ".png")
 			c.Assert(err, IsNil)
+			defer testFile.Close()
 
 			result, err := ParsePNG(testFile)
 			c.Assert(err, Equals, testCase.expectedError)
@@ -161,6 +162,7 @@ func (s *MySuite) TestparsePNG(c *C) {
 		for _, testCase := range sp.testCases {
 			testFile, err := os.Open(path.Join(sp.testDir, testCase.fileName) + ".png")
 			c.Assert(err, IsNil)
+			defer testFile.Close()
 
 			result, err := ParsePNG(testFile)
 			c.Assert(result, DeepEquals, EmptyPNG)
@@ -177,6 +179,7 @@ func (s *MySuite) TestParsePNG(c *C) {
 
 	testFile, err := os.Open(path.Join(s.shouldPass[0].testDir, s.shouldPass[0].testCases[0].fileName) + ".png")
 	c.Assert(err, IsNil)
+	defer testFile.Close()
 
 	result, err := ParsePNG(testFile)
 	c.Assert(err, IsNil)
