@@ -18,7 +18,7 @@ var ErrBadSizeIHDR error = errors.New("IHDR chunk data size is not accepted")
 var ErrBadIHDR error = errors.New("IHDR chunk data is not accepted")
 
 // ErrOutOfBoundsPixel given pixel is out of bounds
-var ErrOutOfBoundsPixel error = errors.New("Pixel is out of bounds")
+var ErrOutOfBoundsPixel error = errors.New("pixel is out of bounds")
 
 // ErrUnknownFilterType unknown filter type
-var ErrUnknownFilterType error = errors.New("Unknown filter type")
+var ErrUnknownFilterType error = errors.New("unknown filter type")

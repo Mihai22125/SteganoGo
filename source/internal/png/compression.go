@@ -6,8 +6,15 @@ import (
 	"io/ioutil"
 )
 
+type Compressor struct {
+}
+
+func NewCompressor() *Compressor {
+	return new(Compressor)
+}
+
 // DecompressPNGData returns decompressed data based on given method
-func DecompressPNGData(data []byte, method CompressionMethod) ([]byte, error) {
+func (c *Compressor) DecompressPNGData(data []byte, method CompressionMethod) ([]byte, error) {
 
 	decompressed := []byte{}
 	var err error
@@ -17,7 +24,7 @@ func DecompressPNGData(data []byte, method CompressionMethod) ([]byte, error) {
 	}
 
 	if method == ComprDeflate {
-		decompressed, err = deflate(data)
+		decompressed, err = c.deflate(data)
 		if err != nil {
 			return nil, err
 		}
@@ -27,8 +34,7 @@ func DecompressPNGData(data []byte, method CompressionMethod) ([]byte, error) {
 }
 
 // deflate : method 0 - DEFLATE/INFLATE compression
-func deflate(data []byte) ([]byte, error) {
-	decompressed := []byte{}
+func (c *Compressor) deflate(data []byte) ([]byte, error) {
 
 	reader := bytes.NewReader(data)
 	decompressedReader, err := zlib.NewReader(reader)
@@ -36,7 +42,7 @@ func deflate(data []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	decompressed, err = ioutil.ReadAll(decompressedReader)
+	decompressed, err := ioutil.ReadAll(decompressedReader)
 	if err != nil {
 		return nil, err
 	}
@@ -46,14 +52,14 @@ func deflate(data []byte) ([]byte, error) {
 }
 
 // CompressPNGData returns compressed data based on given method
-func CompressPNGData(data []byte, method CompressionMethod) ([]byte, error) {
+func (c *Compressor) CompressPNGData(data []byte, method CompressionMethod) ([]byte, error) {
 
 	compressed := []byte{}
 
 	if method != ComprDeflate {
 		return nil, ErrNotSupportedPNG
 	}
-
+	// TODO: add functionality for compressing PNG data
 	if method == ComprDeflate {
 
 	}
@@ -62,13 +68,13 @@ func CompressPNGData(data []byte, method CompressionMethod) ([]byte, error) {
 }
 
 // inflate : method 0 - DEFLATE/INFLATE compression
-func inflate(data []byte) ([]byte, error) {
-	compressed := []byte{}
+func (c *Compressor) inflate(data []byte) ([]byte, error) {
+
 	var reader bytes.Buffer
 
 	compressedReader := zlib.NewWriter(&reader)
 	compressedReader.Write(data)
-	compressed = reader.Bytes()
+	compressed := reader.Bytes()
 	compressedReader.Close()
 
 	return compressed, nil

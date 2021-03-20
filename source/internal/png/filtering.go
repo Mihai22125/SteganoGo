@@ -4,8 +4,25 @@ import (
 	"math"
 )
 
+// recon struct that holds reconstructed data
+type Filterer struct {
+	recon         []uint8 // a slice of reconstructed data
+	stride        uint8
+	height        uint32
+	bytesPerPixel uint8
+}
+
+// newRecon initialise new recon object
+func newFilterer(bytesPerIndex uint8, stride uint8, height uint32) *Filterer {
+	f := new(Filterer)
+	f.bytesPerPixel = bytesPerIndex
+	f.stride = stride
+	f.height = height
+	return f
+}
+
 // PaethPredicator algorithm used for Paeth filtering type
-func PaethPredicator(a, b, c uint8) uint8 {
+func (f *Filterer) PaethPredicator(a, b, c uint8) uint8 {
 	var p float64
 	var pr uint8
 
@@ -25,46 +42,37 @@ func PaethPredicator(a, b, c uint8) uint8 {
 	return pr
 }
 
-// newRecon initialise new recon object
-func newRecon(bytesPerIndex uint8, stride uint8, height uint32) *recon {
-	r := new(recon)
-	r.bytesPerPixel = bytesPerIndex
-	r.stride = stride
-	r.height = height
-	return r
-}
-
 // recon A reconstructs A, the byte corresponding to x in the pixel immediately before the pixel containing x
-func (r *recon) reconA(scanLine uint32, byteIndex uint8) uint8 {
-	if byteIndex >= r.bytesPerPixel {
-		return r.recon[scanLine*uint32(r.stride)+uint32(byteIndex-r.bytesPerPixel)]
+func (f *Filterer) reconA(scanLine uint32, byteIndex uint8) uint8 {
+	if byteIndex >= f.bytesPerPixel {
+		return f.recon[scanLine*uint32(f.stride)+uint32(byteIndex-f.bytesPerPixel)]
 	}
 	return 0
 }
 
 //recon B reconstructs B, the byte corresponding to x in the previous scanline
-func (r *recon) reconB(scanLine uint32, byteIndex uint8) uint8 {
+func (f *Filterer) reconB(scanLine uint32, byteIndex uint8) uint8 {
 	if scanLine > 0 {
-		return r.recon[(scanLine-1)*uint32(r.stride)+uint32(byteIndex)]
+		return f.recon[(scanLine-1)*uint32(f.stride)+uint32(byteIndex)]
 	}
 	return 0
 }
 
 // recon C reconstructs C, the byte corresponding to b in the pixel immediately before the pixel containing b
-func (r *recon) reconC(scanLine uint32, byteIndex uint8) uint8 {
-	if scanLine > 0 && byteIndex >= r.bytesPerPixel {
-		return r.recon[(scanLine-1)*uint32(r.stride)+uint32(byteIndex-r.bytesPerPixel)]
+func (f *Filterer) reconC(scanLine uint32, byteIndex uint8) uint8 {
+	if scanLine > 0 && byteIndex >= f.bytesPerPixel {
+		return f.recon[(scanLine-1)*uint32(f.stride)+uint32(byteIndex-f.bytesPerPixel)]
 	}
 	return 0
 }
 
 // reconstruct defiltres decompressed png data
-func (r *recon) reconstruct(IDATdata []byte) error {
+func (f *Filterer) reconstruct(IDATdata []byte) error {
 	i := 0
-	for row := uint32(0); row < r.height; row++ { // for each scanline
+	for row := uint32(0); row < f.height; row++ { // for each scanline
 		filterType := IDATdata[i] // first byte of scanline is filter type
 		i++
-		for c := uint8(0); c < r.stride; c++ { // for each byte in scanline
+		for c := uint8(0); c < f.stride; c++ { // for each byte in scanline
 			filtX := IDATdata[i]
 			reconX := uint8(0)
 			i++
@@ -72,18 +80,18 @@ func (r *recon) reconstruct(IDATdata []byte) error {
 			case byte(FiltNone):
 				reconX = filtX
 			case byte(FiltSub):
-				reconX = filtX + r.reconA(row, c)
+				reconX = filtX + f.reconA(row, c)
 			case byte(FiltUp):
-				reconX = filtX + r.reconB(row, c)
+				reconX = filtX + f.reconB(row, c)
 			case byte(FiltAverage):
-				reconX = filtX + (r.reconA(row, c)+r.reconB(row, c))/2
+				reconX = filtX + (f.reconA(row, c)+f.reconB(row, c))/2
 			case byte(FiltPaeth):
-				reconX = filtX + PaethPredicator(r.reconA(row, c), r.reconB(row, c), r.reconC(row, c))
+				reconX = filtX + f.PaethPredicator(f.reconA(row, c), f.reconB(row, c), f.reconC(row, c))
 			default:
 				return ErrUnknownFilterType
 			}
 
-			r.recon = append(r.recon, reconX)
+			f.recon = append(f.recon, reconX)
 
 		}
 	}

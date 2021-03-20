@@ -10,16 +10,6 @@ type imageMetadata struct {
 	interlaceMethod   InterlaceMethod   // indicates whether there is interlacing
 }
 
-//type recon []uint8
-
-// recon struct that holds reconstructed data
-type recon struct {
-	recon         []uint8
-	stride        uint8
-	height        uint32
-	bytesPerPixel uint8
-}
-
 // pngImage structure with parsed png data
 type pngImage struct {
 	meta imageMetadata

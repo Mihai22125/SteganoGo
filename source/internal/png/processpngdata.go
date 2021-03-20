@@ -71,29 +71,31 @@ func (pngImg *pngImage) stride() uint32 {
 
 // Unfilter
 func (pngImg *pngImage) Unfilter(decompressed []byte) error {
-	// r holds reconstructed png pixels
-	r := newRecon(pngImg.bytesPerPixel(), uint8(pngImg.stride()), pngImg.meta.height)
+
+	filterer := newFilterer(pngImg.bytesPerPixel(), uint8(pngImg.stride()), pngImg.meta.height)
 
 	// defilter uncompressed data
-	err := r.reconstruct(decompressed)
+	err := filterer.reconstruct(decompressed)
 	if err != nil {
 		return err
 	}
 
 	// assign processed data to png struct
-	pngImg.data = r.recon
+	pngImg.data = filterer.recon
 	return nil
 }
 
 // ProcessData consumes an png.StructPNG and it processes png data
 func (pngImg *pngImage) ProcessData(stpng *png.StructPNG) error {
+	compressor := NewCompressor()
+
 	IDATdata, err := stpng.IDATdata()
 	if err != nil {
 		return err
 	}
 
 	// decompress png data
-	decompressed, err := DecompressPNGData(IDATdata, pngImg.meta.compressionMethod)
+	decompressed, err := compressor.DecompressPNGData(IDATdata, pngImg.meta.compressionMethod)
 	if err != nil {
 		return err
 	}
@@ -111,12 +113,7 @@ func (pngImg *pngImage) ProcessImage(path string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	/*
-		buf, err := fileutils.PreProcessFile(file)
-		if err != nil {
-			log.Fatal(err)
-		}
-	*/
+
 	pngData, err := png.ParsePNG(file)
 	if err != nil {
 		log.Fatal(err)
