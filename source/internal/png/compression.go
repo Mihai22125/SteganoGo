@@ -73,6 +73,7 @@ func (c *Compressor) inflate(data []byte) ([]byte, error) {
 
 	compressedReader := zlib.NewWriter(&reader)
 	compressedReader.Write(data)
+	compressedReader.Close()
 	compressed := reader.Bytes()
 	compressedReader.Close()
 
