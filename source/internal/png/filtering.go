@@ -69,6 +69,8 @@ func (f *Filterer) reconC(scanLine uint32, byteIndex uint8) uint8 {
 // reconstruct defiltres decompressed png data
 func (f *Filterer) reconstruct(IDATdata []byte) error {
 	i := 0
+	f.recon = []byte{}
+
 	for row := uint32(0); row < f.height; row++ { // for each scanline
 		filterType := IDATdata[i] // first byte of scanline is filter type
 		i++
@@ -90,7 +92,6 @@ func (f *Filterer) reconstruct(IDATdata []byte) error {
 			default:
 				return ErrUnknownFilterType
 			}
-
 			f.recon = append(f.recon, reconX)
 
 		}

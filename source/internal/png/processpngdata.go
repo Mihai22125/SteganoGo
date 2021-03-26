@@ -37,9 +37,9 @@ func (pngImg *pngImage) processIHDR(ihdrData []byte) error {
 	meta := imageMetadata{}
 
 	buf := ihdrData[0:4]
-	meta.width = binary.LittleEndian.Uint32(buf)
+	meta.width = binary.BigEndian.Uint32(buf)
 	buf = ihdrData[4:8]
-	meta.height = binary.LittleEndian.Uint32(buf)
+	meta.height = binary.BigEndian.Uint32(buf)
 	meta.bitDepth = ihdrData[8]
 	meta.colorType = ColorType(ihdrData[9])
 	meta.compressionMethod = CompressionMethod(ihdrData[10])
@@ -50,8 +50,19 @@ func (pngImg *pngImage) processIHDR(ihdrData []byte) error {
 	return nil
 }
 
-// bytesPerPixel retun bytes per pixel based on color type
+// samplesPerPixel retun bytes per pixel for current image
 func (pngImg *pngImage) bytesPerPixel() uint8 {
+	bytesPerSample := uint8(0)
+	if pngImg.meta.bitDepth < 8 {
+		bytesPerSample = 1
+	} else {
+		bytesPerSample = pngImg.meta.bitDepth / uint8(8)
+	}
+	return pngImg.samplesPerPixel() * bytesPerSample
+}
+
+// samplesPerPixel retun samples per pixel based on color type
+func (pngImg *pngImage) samplesPerPixel() uint8 {
 	if pngImg.meta.colorType == Grayscale || pngImg.meta.colorType == IndexedColor {
 		return 1
 	}
@@ -79,9 +90,10 @@ func (pngImg *pngImage) Unfilter(decompressed []byte) error {
 	if err != nil {
 		return err
 	}
+	defiltered := filterer.recon
 
 	// assign processed data to png struct
-	pngImg.data = filterer.recon
+	pngImg.data = defiltered
 	return nil
 }
 
