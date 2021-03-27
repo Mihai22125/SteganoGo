@@ -71,6 +71,10 @@ func (f *Filterer) reconstruct(IDATdata []byte) error {
 	i := 0
 	f.recon = []byte{}
 
+	if len(IDATdata) == 0 {
+		return ErrInvalidInput
+	}
+
 	for row := uint32(0); row < f.height; row++ { // for each scanline
 		filterType := IDATdata[i] // first byte of scanline is filter type
 		i++
