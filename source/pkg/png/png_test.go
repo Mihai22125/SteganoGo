@@ -165,6 +165,7 @@ func (s *MySuite) TestparsePNG(c *C) {
 			defer testFile.Close()
 
 			result, err := ParsePNG(testFile)
+			c.Assert(err, Equals, testCase.expectedError)
 			c.Assert(result, DeepEquals, EmptyPNG)
 
 		}

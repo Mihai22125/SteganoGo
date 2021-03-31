@@ -24,4 +24,4 @@ var ErrOutOfBoundsPixel error = errors.New("pixel is out of bounds")
 var ErrUnknownFilterType error = errors.New("unknown filter type")
 
 // ErrInvalidInput invalid input passed to a specific function
-var ErrInvalidInput error = errors.New("Invalid input")
+var ErrInvalidInput error = errors.New("invalid input")

@@ -2,7 +2,6 @@ package pngint
 
 import (
 	"encoding/binary"
-	"fmt"
 	"log"
 	"os"
 
@@ -12,9 +11,10 @@ import (
 // extractMetadata extracts data from IHDR chunk. Returns error
 func (pngImg *pngImage) extractMetadata(stpng png.StructPNG) error {
 
+	pngImg.meta = imageMetadata{}
 	ihdr, err := stpng.IHDRChunk()
 	if err != nil {
-		fmt.Println("[extractMetadata]: failed to get IHDR chunk")
+		//fmt.Println("[extractMetadata]: failed to get IHDR chunk")
 		return err
 	}
 
@@ -30,8 +30,9 @@ func (pngImg *pngImage) extractMetadata(stpng png.StructPNG) error {
 // parseIHDR perse IHDR chunk
 func (pngImg *pngImage) processIHDR(ihdrData []byte) error {
 
+	pngImg.meta = imageMetadata{}
 	if len(ihdrData) != 13 {
-		fmt.Println("IHDR chunk has invalid size")
+		//fmt.Println("IHDR chunk has invalid size")
 		return png.ErrInvalidIHDR
 	}
 	meta := imageMetadata{}
@@ -63,16 +64,23 @@ func (pngImg *pngImage) bytesPerPixel() uint8 {
 
 // samplesPerPixel retun samples per pixel based on color type
 func (pngImg *pngImage) samplesPerPixel() uint8 {
-	if pngImg.meta.colorType == Grayscale || pngImg.meta.colorType == IndexedColor {
-		return 1
+
+	samples := uint8(0)
+	switch pngImg.meta.colorType {
+
+	case Grayscale:
+		samples = 1
+	case IndexedColor:
+		samples = 1
+	case GrayscaleWithAlpha:
+		samples = 2
+	case Truecolor:
+		samples = 3
+	case TruecolorWithAlpha:
+		samples = 4
 	}
-	if pngImg.meta.colorType == GrayscaleWithAlpha {
-		return 2
-	}
-	if pngImg.meta.colorType == Truecolor {
-		return 3
-	}
-	return 4
+
+	return samples
 }
 
 // stride return bytes per row from png image
@@ -121,7 +129,7 @@ func (pngImg *pngImage) ProcessData(stpng *png.StructPNG) error {
 }
 
 func (pngImg *pngImage) ProcessImage(path string) {
-	file, err := os.Open("file.go") // For read access.
+	file, err := os.Open(path) // For read access.
 	if err != nil {
 		log.Fatal(err)
 	}
