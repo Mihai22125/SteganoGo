@@ -32,8 +32,8 @@ var _ = Suite(&MySuiteFilterer{})
 func (s *MySuiteFilterer) SetUpSuite(c *C) {
 	s.filterer = newFilterer(1, 32, 32)
 
-	s.inputDir = "../../../test_files/png_test_files/filtering/input"
-	s.outputDir = "../../../test_files/png_test_files/filtering/expected"
+	s.inputDir = "../../../test_files/png_test_files/png_internal/filtering/input"
+	s.outputDir = "../../../test_files/png_test_files/png_internal/filtering/expected"
 
 	s.shouldPass = []testCase{
 		{
