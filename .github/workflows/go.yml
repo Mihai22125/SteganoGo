@@ -49,12 +49,7 @@ jobs:
       run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
  
     - name: Upload coverage report
-      uses: codecov/codecov-action@v1.0.2
-      with:
-        token: 573af21b-2de0-49e0-beff-5a7b3489b99f
-        file: ./coverage.txt
-        flags: unittests
-        name: codecov-umbrella
+      run: bash <(curl -s https://codecov.io/bash)
         
 
 
