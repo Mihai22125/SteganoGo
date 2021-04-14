@@ -63,6 +63,7 @@ func (s *MySuite) SetUpSuite(c *C) {
 			s.shouldPass[i].testFiles = append(s.shouldPass[i].testFiles, fileutils.FileNameWithoutExtension(file.Name()))
 
 			expected, err := ioutil.ReadFile(path.Join(sp.expectedDir, file.Name()))
+			expected = bytes.Replace(expected, []byte("\x0d"), []byte{}, -1)
 			c.Assert(err, IsNil)
 			newTestCase := testCase{
 				testName:      sp.groupName + fmt.Sprintf("%d", j),
