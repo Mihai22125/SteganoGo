@@ -26,7 +26,7 @@ func (f *Filterer) PaethPredicator(a, b, c uint8) uint8 {
 	var p float64
 	var pr uint8
 
-	p = float64(a + b + c)
+	p = float64(a) + float64(b) - float64(c)
 	pa := math.Abs(p - float64(a))
 	pb := math.Abs(p - float64(b))
 	pc := math.Abs(p - float64(c))
@@ -90,7 +90,7 @@ func (f *Filterer) reconstruct(IDATdata []byte) error {
 			case byte(FiltUp):
 				reconX = filtX + f.reconB(row, c)
 			case byte(FiltAverage):
-				reconX = filtX + (f.reconA(row, c)+f.reconB(row, c))/2
+				reconX = filtX + uint8((int(f.reconA(row, c))+int(f.reconB(row, c)))/2)
 			case byte(FiltPaeth):
 				reconX = filtX + f.PaethPredicator(f.reconA(row, c), f.reconB(row, c), f.reconC(row, c))
 			default:
@@ -101,4 +101,43 @@ func (f *Filterer) reconstruct(IDATdata []byte) error {
 		}
 	}
 	return nil
+}
+
+// The absolute value of a byte interpreted as a signed int8.
+func abs8(d uint8) int {
+
+	if d < 128 {
+		return int(d)
+	}
+	return 256 - int(d)
+}
+
+// TODO: implement all filtering methods
+// FilterData filter given byte slice
+func (f *Filterer) FilterData(data []byte) []byte {
+
+	size := int(f.stride)
+	pr := make([]uint8, size)
+	filtered := []byte{}
+	// cr[*] and pr are the bytes for the current and previous row.
+	// cr[0] is unfiltered (or equivalently, filtered with the ftNone filter).
+	// cr[ft], for non-zero filter types ft, are buffers for transforming cr[0] under the
+	// other PNG filter types. These buffers are allocated once and re-used for each row.
+	// The +1 is for the per-row filter type, which is at cr[*][0].
+
+	_ = size
+	_ = pr
+
+	cr := make([][]uint8, 6)
+	for i := 0; i < 6; i++ {
+		cr[i] = make([]uint8, size) // initialize a slice of dx unit8 in each of dy slices
+	}
+
+	for i := 0; i < len(data)/size; i++ {
+		filtered = append(filtered, 0)
+		filtered = append(filtered, data[i*size:i*size+size]...)
+	}
+
+	return filtered
+
 }

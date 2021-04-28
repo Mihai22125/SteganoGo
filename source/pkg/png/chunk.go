@@ -1,5 +1,15 @@
 package png
 
+func NewChunk(size uint32, chunkType string, data []byte, crc uint32) Chunk {
+	chunk := Chunk{}
+	chunk.size = size
+	chunk.chunkType = chunkType
+	chunk.data = data
+	chunk.crc = crc
+
+	return chunk
+}
+
 // Size return chunk size
 func (c Chunk) Size() uint32 {
 	return c.size
