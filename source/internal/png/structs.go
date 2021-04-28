@@ -1,5 +1,7 @@
 package pngint
 
+import "github.com/Mihai22125/SteganoGo/pkg/png"
+
 type imageMetadata struct {
 	width             uint32
 	height            uint32            // gives the image dimensions in pixels. Zero is an invalid value.
@@ -14,4 +16,5 @@ type imageMetadata struct {
 type pngImage struct {
 	meta imageMetadata
 	data []uint8
+	png  png.StructPNG
 }
