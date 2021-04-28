@@ -419,3 +419,37 @@ func (s *MySuite) TestChunkCRC(c *C) {
 	Ccrc := myChunk.CRC()
 	c.Assert(Ccrc, Equals, myChunk.crc)
 }
+
+func (s *MySuite) TestUnmarshalJSON(c *C) {
+	headerJSON := `{"signature":null}`
+	err := json.Unmarshal([]byte(headerJSON), new(Header))
+	c.Assert(err, IsNil)
+
+	chunkJSON := `{"size": 0, "chunk_type": "chunk",  "data": null, "crc": 123}`
+	err = json.Unmarshal([]byte(chunkJSON), new(Chunk))
+	c.Assert(err, IsNil)
+
+	structPNGJSON := `{"header":{"signature":null}, "chunks": null}`
+	err = json.Unmarshal([]byte(structPNGJSON), new(StructPNG))
+	c.Assert(err, IsNil)
+}
+
+func (s *MySuite) TestNewChunk(c *C) {
+	myChunk := NewChunk(10, TypeIDAT, []byte{0, 1}, 123)
+	expectedChunk := Chunk{
+		size:      10,
+		chunkType: TypeIDAT,
+		data:      []byte{0, 1},
+		crc:       123,
+	}
+	c.Assert(myChunk, DeepEquals, expectedChunk)
+}
+
+func (s *MySuite) TestUpdateIdatChunks(c *C) {
+
+	newIDATChunks := []Chunk{{4, TypeIDAT, []byte{1, 2, 3, 4}, 123}}
+	s.testPNG.UpdateIdatChunks(newIDATChunks)
+	actualIdatChunks, err := s.testPNG.IDATChunks()
+	c.Assert(err, IsNil)
+	c.Assert(actualIdatChunks, DeepEquals, newIDATChunks)
+}
