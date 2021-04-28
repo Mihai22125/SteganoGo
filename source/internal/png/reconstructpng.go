@@ -8,7 +8,7 @@ import (
 
 func (pngImg *pngImage) reconstructIDAT() ([]byte, error) {
 
-	filterer := newFilterer(pngImg.bytesPerPixel(), uint8(pngImg.stride()), pngImg.meta.height)
+	filterer := newFilterer(pngImg.bytesPerPixel(), uint8(pngImg.stride()), pngImg.meta.height, pngImg.meta.bitDepth)
 	compressor := new(Compressor)
 
 	filteredData := filterer.FilterData(pngImg.data)

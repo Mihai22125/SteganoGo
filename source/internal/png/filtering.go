@@ -10,14 +10,16 @@ type Filterer struct {
 	stride        uint8
 	height        uint32
 	bytesPerPixel uint8
+	bitDepth      uint8
 }
 
 // newRecon initialise new recon object
-func newFilterer(bytesPerIndex uint8, stride uint8, height uint32) *Filterer {
+func newFilterer(bytesPerIndex uint8, stride uint8, height uint32, bitDepth uint8) *Filterer {
 	f := new(Filterer)
 	f.bytesPerPixel = bytesPerIndex
 	f.stride = stride
 	f.height = height
+	f.bitDepth = bitDepth
 	return f
 }
 
@@ -78,7 +80,7 @@ func (f *Filterer) reconstruct(IDATdata []byte) error {
 	for row := uint32(0); row < f.height; row++ { // for each scanline
 		filterType := IDATdata[i] // first byte of scanline is filter type
 		i++
-		for c := uint8(0); c < f.stride; c++ { // for each byte in scanline
+		for c := uint8(0); c < uint8(float64(f.stride)*(float64(f.bitDepth)/8)); c++ { // for each byte in scanline
 			filtX := IDATdata[i]
 			reconX := uint8(0)
 			i++
