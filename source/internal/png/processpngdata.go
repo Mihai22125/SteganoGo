@@ -2,6 +2,7 @@ package pngint
 
 import (
 	"encoding/binary"
+	"fmt"
 	"log"
 	"os"
 
@@ -91,7 +92,7 @@ func (pngImg *pngImage) stride() uint32 {
 // Unfilter
 func (pngImg *pngImage) Unfilter(decompressed []byte) error {
 
-	filterer := newFilterer(pngImg.bytesPerPixel(), uint8(pngImg.stride()), pngImg.meta.height)
+	filterer := newFilterer(pngImg.bytesPerPixel(), uint8(pngImg.stride()), pngImg.meta.height, pngImg.meta.bitDepth)
 
 	// defilter uncompressed data
 	err := filterer.reconstruct(decompressed)
@@ -109,11 +110,11 @@ func (pngImg *pngImage) Unfilter(decompressed []byte) error {
 func (pngImg *pngImage) ProcessData(stpng *png.StructPNG) error {
 	compressor := NewCompressor()
 
+	pngImg.extractMetadata(*stpng)
 	IDATdata, err := stpng.IDATdata()
 	if err != nil {
 		return err
 	}
-
 	// decompress png data
 	decompressed, err := compressor.DecompressPNGData(IDATdata, pngImg.meta.compressionMethod)
 	if err != nil {
@@ -125,22 +126,26 @@ func (pngImg *pngImage) ProcessData(stpng *png.StructPNG) error {
 		return err
 	}
 
+	fmt.Println(pngImg.data)
+
 	return nil
 }
 
-func (pngImg *pngImage) ProcessImage(path string) {
+func ProcessImage(path string) (pngImage, error) {
+	newPNGImage := pngImage{}
 	file, err := os.Open(path) // For read access.
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return newPNGImage, err
 	}
 
 	pngData, err := png.ParsePNG(file)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return newPNGImage, err
 	}
-
-	newPNGImage := pngImage{}
-
+	newPNGImage.png = pngData
 	newPNGImage.ProcessData(&pngData)
+	return newPNGImage, nil
 
 }

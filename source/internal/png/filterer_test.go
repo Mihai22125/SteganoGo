@@ -30,7 +30,7 @@ type MySuiteFilterer struct {
 var _ = Suite(&MySuiteFilterer{})
 
 func (s *MySuiteFilterer) SetUpSuite(c *C) {
-	s.filterer = newFilterer(1, 32, 32)
+	s.filterer = newFilterer(1, 32, 32, 8)
 
 	s.inputDir = "../../../test_files/png_test_files/png_internal/filtering/input"
 	s.outputDir = "../../../test_files/png_test_files/png_internal/filtering/expected"
@@ -114,4 +114,18 @@ func (s *MySuiteFilterer) Testreconstruct(c *C) {
 		c.Assert(s.filterer.recon, DeepEquals, tc.expectedOutput)
 	}
 
+}
+
+func (s *MySuiteFilterer) TestAbs8(c *C) {
+	c.Assert(abs8(10), Equals, 10)
+	c.Assert(abs8(138), Equals, 118)
+}
+
+func (s *MySuiteFilterer) TestFilterData(c *C) {
+	filterer := newFilterer(1, 8, 4, 1)
+	rawData := []byte{255, 0, 8, 255, 8, 15, 255, 16, 23, 255, 24, 31, 255, 32, 39, 255, 41, 47, 255, 49, 55, 255, 57, 63, 255, 65, 71, 255, 74, 79, 255, 82}
+	filteredData := filterer.FilterData(rawData)
+
+	expected := []byte{0x0, 0xff, 0x0, 0x8, 0xff, 0x8, 0xf, 0xff, 0x10, 0x0, 0x17, 0xff, 0x18, 0x1f, 0xff, 0x20, 0x27, 0xff, 0x0, 0x29, 0x2f, 0xff, 0x31, 0x37, 0xff, 0x39, 0x3f, 0x0, 0xff, 0x41, 0x47, 0xff, 0x4a, 0x4f, 0xff, 0x52}
+	c.Assert(filteredData, DeepEquals, expected)
 }

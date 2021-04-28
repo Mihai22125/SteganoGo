@@ -153,3 +153,29 @@ func (p *StructPNG) IDATdata() ([]byte, error) {
 
 	return data, nil
 }
+
+func (p *StructPNG) UpdateIdatChunks(newIDATChunks []Chunk) {
+	var beforeIDAT, afterIDAT []Chunk
+
+	i := 0
+
+	for i = 0; i < len(p.chunks); i++ {
+		if p.chunks[i].chunkType == TypeIDAT {
+			beforeIDAT = p.chunks[:i]
+			break
+		}
+	}
+
+	for j := i; j < len(p.chunks); j++ {
+		if p.chunks[j].chunkType != TypeIDAT {
+			afterIDAT = p.chunks[j:]
+		}
+	}
+
+	updatedChunks := []Chunk{}
+	updatedChunks = append(updatedChunks, beforeIDAT...)
+	updatedChunks = append(updatedChunks, newIDATChunks...)
+	updatedChunks = append(updatedChunks, afterIDAT...)
+
+	p.chunks = updatedChunks
+}
