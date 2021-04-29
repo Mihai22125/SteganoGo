@@ -12,8 +12,8 @@ type imageMetadata struct {
 	interlaceMethod   InterlaceMethod   // indicates whether there is interlacing
 }
 
-// pngImage structure with parsed png data
-type pngImage struct {
+// PngImage structure with parsed png data
+type PngImage struct {
 	meta imageMetadata
 	data []uint8
 	png  png.StructPNG
