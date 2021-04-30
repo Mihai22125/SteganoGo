@@ -1,6 +1,7 @@
 package pngint
 
 import (
+	"hash/crc32"
 	"os"
 
 	"github.com/Mihai22125/SteganoGo/pkg/png"
@@ -8,7 +9,7 @@ import (
 
 func (pngImg *PngImage) reconstructIDAT() ([]byte, error) {
 
-	filterer := newFilterer(pngImg.bytesPerPixel(), uint8(pngImg.stride()), pngImg.meta.height, pngImg.meta.bitDepth)
+	filterer := newFilterer(pngImg.bytesPerPixel(), uint16(pngImg.stride()), pngImg.meta.height, pngImg.meta.bitDepth)
 	compressor := new(Compressor)
 
 	filteredData := filterer.FilterData(pngImg.data)
@@ -38,7 +39,8 @@ func (pngImg *PngImage) divideIDATChunks(data []byte) []png.Chunk {
 	}
 
 	for _, ch := range divided {
-		chunk := png.NewChunk(uint32(len(ch)), png.TypeIDAT, ch, 0)
+		crc := crc32.ChecksumIEEE(append([]byte(png.TypeIDAT), ch...))
+		chunk := png.NewChunk(uint32(len(ch)), png.TypeIDAT, ch, crc)
 		idatChunks = append(idatChunks, chunk)
 	}
 
@@ -58,7 +60,7 @@ func (pngImg *PngImage) UpdatePNG() error {
 	return nil
 }
 
-func (pngImg *PngImage) WriteFile() error {
+func (pngImg *PngImage) ReconstructImage(filepath string) error {
 
 	buf, err := pngImg.png.Encode()
 	if err != nil {
@@ -66,7 +68,7 @@ func (pngImg *PngImage) WriteFile() error {
 	}
 
 	// open output file
-	fo, err := os.Create("output.png")
+	fo, err := os.Create(filepath)
 	if err != nil {
 		panic(err)
 	}
