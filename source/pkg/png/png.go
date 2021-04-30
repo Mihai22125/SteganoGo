@@ -156,7 +156,8 @@ func (p *StructPNG) IDATdata() ([]byte, error) {
 
 func (p *StructPNG) UpdateIdatChunks(newIDATChunks []Chunk) {
 	var beforeIDAT, afterIDAT []Chunk
-
+	f, _ := os.Create("before.txt")
+	fmt.Fprintf(f, "%v+\n", p)
 	i := 0
 
 	for i = 0; i < len(p.chunks); i++ {
@@ -178,4 +179,6 @@ func (p *StructPNG) UpdateIdatChunks(newIDATChunks []Chunk) {
 	updatedChunks = append(updatedChunks, afterIDAT...)
 
 	p.chunks = updatedChunks
+	f, _ = os.Create("after.txt")
+	fmt.Fprintf(f, "%v+\n", p)
 }

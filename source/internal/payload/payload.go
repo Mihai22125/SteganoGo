@@ -28,6 +28,7 @@ func NewPayload(buf *bytes.Buffer, ext string) (Payload, error) {
 func (p *Payload) GeneratePayload() *bytes.Buffer {
 	buf := []byte{}
 
+	buf = append(buf, []byte(PayloadSignature)...)
 	bs := make([]byte, 4)
 	binary.LittleEndian.PutUint32(bs, p.header.size)
 	buf = append(buf, bs...)
@@ -40,11 +41,17 @@ func (p *Payload) GeneratePayload() *bytes.Buffer {
 	return bytes.NewBuffer(buf)
 }
 
-func ExtractPayload(buf *bytes.Buffer) Payload {
+func ExtractPayload(buf *bytes.Buffer) (Payload, error) {
 
 	extractedPayload := Payload{}
 
-	bs := make([]byte, 4)
+	bs := make([]byte, len(PayloadSignature))
+	buf.Read(bs)
+	if string(bs) != PayloadSignature {
+		return extractedPayload, ErrNotPayload
+	}
+
+	bs = make([]byte, 4)
 	buf.Read(bs)
 	extractedPayload.header.size = binary.LittleEndian.Uint32(bs)
 
@@ -60,11 +67,11 @@ func ExtractPayload(buf *bytes.Buffer) Payload {
 	buf.Read(bs)
 	extractedPayload.data = bs
 
-	return extractedPayload
+	return extractedPayload, nil
 }
 
 func (p *Payload) WriteFile() error {
-	path := "output." + p.header.fileExtension
+	path := "extracted_payload." + p.header.fileExtension
 
 	f, err := os.Create(path)
 	if err != nil {
