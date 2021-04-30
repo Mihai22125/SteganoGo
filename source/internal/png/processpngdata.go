@@ -10,7 +10,7 @@ import (
 )
 
 // extractMetadata extracts data from IHDR chunk. Returns error
-func (pngImg *pngImage) extractMetadata(stpng png.StructPNG) error {
+func (pngImg *PngImage) extractMetadata(stpng png.StructPNG) error {
 
 	pngImg.meta = imageMetadata{}
 	ihdr, err := stpng.IHDRChunk()
@@ -29,7 +29,7 @@ func (pngImg *pngImage) extractMetadata(stpng png.StructPNG) error {
 }
 
 // parseIHDR perse IHDR chunk
-func (pngImg *pngImage) processIHDR(ihdrData []byte) error {
+func (pngImg *PngImage) processIHDR(ihdrData []byte) error {
 
 	pngImg.meta = imageMetadata{}
 	if len(ihdrData) != 13 {
@@ -53,7 +53,7 @@ func (pngImg *pngImage) processIHDR(ihdrData []byte) error {
 }
 
 // samplesPerPixel retun bytes per pixel for current image
-func (pngImg *pngImage) bytesPerPixel() uint8 {
+func (pngImg *PngImage) bytesPerPixel() uint8 {
 	bytesPerSample := uint8(0)
 	if pngImg.meta.bitDepth < 8 {
 		bytesPerSample = 1
@@ -64,7 +64,7 @@ func (pngImg *pngImage) bytesPerPixel() uint8 {
 }
 
 // samplesPerPixel retun samples per pixel based on color type
-func (pngImg *pngImage) samplesPerPixel() uint8 {
+func (pngImg *PngImage) samplesPerPixel() uint8 {
 
 	samples := uint8(0)
 	switch pngImg.meta.colorType {
@@ -85,12 +85,12 @@ func (pngImg *pngImage) samplesPerPixel() uint8 {
 }
 
 // stride return bytes per row from png image
-func (pngImg *pngImage) stride() uint32 {
+func (pngImg *PngImage) stride() uint32 {
 	return pngImg.meta.width * uint32(pngImg.bytesPerPixel())
 }
 
 // Unfilter
-func (pngImg *pngImage) Unfilter(decompressed []byte) error {
+func (pngImg *PngImage) Unfilter(decompressed []byte) error {
 
 	filterer := newFilterer(pngImg.bytesPerPixel(), uint8(pngImg.stride()), pngImg.meta.height, pngImg.meta.bitDepth)
 
@@ -107,7 +107,7 @@ func (pngImg *pngImage) Unfilter(decompressed []byte) error {
 }
 
 // ProcessData consumes an png.StructPNG and it processes png data
-func (pngImg *pngImage) ProcessData(stpng *png.StructPNG) error {
+func (pngImg *PngImage) ProcessData(stpng *png.StructPNG) error {
 	compressor := NewCompressor()
 
 	pngImg.extractMetadata(*stpng)
@@ -131,21 +131,21 @@ func (pngImg *pngImage) ProcessData(stpng *png.StructPNG) error {
 	return nil
 }
 
-func ProcessImage(path string) (pngImage, error) {
-	newPNGImage := pngImage{}
+func ProcessImage(path string) (PngImage, error) {
+	newPngImage := PngImage{}
 	file, err := os.Open(path) // For read access.
 	if err != nil {
 		log.Println(err)
-		return newPNGImage, err
+		return newPngImage, err
 	}
 
 	pngData, err := png.ParsePNG(file)
 	if err != nil {
 		log.Println(err)
-		return newPNGImage, err
+		return newPngImage, err
 	}
-	newPNGImage.png = pngData
-	newPNGImage.ProcessData(&pngData)
-	return newPNGImage, nil
+	newPngImage.png = pngData
+	newPngImage.ProcessData(&pngData)
+	return newPngImage, nil
 
 }

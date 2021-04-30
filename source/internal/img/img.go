@@ -1,6 +1,6 @@
-package image
+package img
 
-type Image interface {
+type Img interface {
 
 	// Methods
 

@@ -6,13 +6,13 @@ import (
 )
 
 type MySuitePNGReconstruct struct {
-	myPNG *pngImage
+	myPNG *PngImage
 }
 
 var _ = Suite(&MySuitePNGReconstruct{})
 
 func (s *MySuitePNGReconstruct) SetUpSuite(c *C) {
-	s.myPNG = new(pngImage)
+	s.myPNG = new(PngImage)
 }
 
 func (s *MySuitePNGReconstruct) TestreconstructIDAT(c *C) {

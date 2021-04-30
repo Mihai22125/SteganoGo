@@ -6,7 +6,7 @@ import (
 	"github.com/Mihai22125/SteganoGo/pkg/png"
 )
 
-func (pngImg *pngImage) reconstructIDAT() ([]byte, error) {
+func (pngImg *PngImage) reconstructIDAT() ([]byte, error) {
 
 	filterer := newFilterer(pngImg.bytesPerPixel(), uint8(pngImg.stride()), pngImg.meta.height, pngImg.meta.bitDepth)
 	compressor := new(Compressor)
@@ -21,7 +21,7 @@ func (pngImg *pngImage) reconstructIDAT() ([]byte, error) {
 	return compressed, nil
 }
 
-func (pngImg *pngImage) divideIDATChunks(data []byte) []png.Chunk {
+func (pngImg *PngImage) divideIDATChunks(data []byte) []png.Chunk {
 	var divided [][]byte
 	var idatChunks []png.Chunk
 
@@ -45,7 +45,7 @@ func (pngImg *pngImage) divideIDATChunks(data []byte) []png.Chunk {
 	return idatChunks
 }
 
-func (pngImg *pngImage) UpdatePNG() error {
+func (pngImg *PngImage) UpdatePNG() error {
 
 	pngData, err := pngImg.reconstructIDAT()
 	if err != nil {
@@ -58,7 +58,7 @@ func (pngImg *pngImage) UpdatePNG() error {
 	return nil
 }
 
-func (pngImg *pngImage) WriteFile() error {
+func (pngImg *PngImage) WriteFile() error {
 
 	buf, err := pngImg.png.Encode()
 	if err != nil {
