@@ -1,8 +1,12 @@
 package payload
 
 import (
+	"bufio"
 	"bytes"
+	"compress/zlib"
 	"encoding/binary"
+	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 
@@ -26,8 +30,31 @@ func NewPayload(buf *bytes.Buffer, ext string) (Payload, error) {
 }
 
 func (p *Payload) GeneratePayload() *bytes.Buffer {
-	buf := []byte{}
 
+	/*
+		b := bytes.NewBuffer([]byte{})
+		w := zlib.NewWriter(b)
+
+		w.Write([]byte(PayloadSignature))
+		bs := make([]byte, 4)
+		binary.LittleEndian.PutUint32(bs, p.header.size)
+		//buf = append(buf, bs...)
+		w.Write(bs)
+
+		bs = make([]byte, 2)
+		binary.LittleEndian.PutUint16(bs, p.header.extSize)
+		//	buf = append(buf, bs...)
+		w.Write(bs)
+		//buf = append(buf, []byte(p.header.fileExtension)...)
+		w.Write([]byte(p.header.fileExtension))
+
+		//buf = append(buf, p.data...)
+		w.Write(p.data)
+		w.Close()
+		return b
+	*/
+
+	buf := []byte{}
 	buf = append(buf, []byte(PayloadSignature)...)
 	bs := make([]byte, 4)
 	binary.LittleEndian.PutUint32(bs, p.header.size)
@@ -38,34 +65,54 @@ func (p *Payload) GeneratePayload() *bytes.Buffer {
 	buf = append(buf, bs...)
 	buf = append(buf, []byte(p.header.fileExtension)...)
 	buf = append(buf, p.data...)
-	return bytes.NewBuffer(buf)
+
+	b := bytes.NewBuffer([]byte{})
+	w := zlib.NewWriter(b)
+
+	w.Write(buf)
+	w.Close()
+
+	return b
+
 }
 
 func ExtractPayload(buf *bytes.Buffer) (Payload, error) {
 
 	extractedPayload := Payload{}
 
+	r, err := zlib.NewReader(buf)
+	if err != nil {
+		return extractedPayload, err
+	}
+
 	bs := make([]byte, len(PayloadSignature))
-	buf.Read(bs)
+	r.Read(bs)
 	if string(bs) != PayloadSignature {
 		return extractedPayload, ErrNotPayload
 	}
 
 	bs = make([]byte, 4)
-	buf.Read(bs)
+	r.Read(bs)
 	extractedPayload.header.size = binary.LittleEndian.Uint32(bs)
 
 	bs = make([]byte, 2)
-	buf.Read(bs)
+	r.Read(bs)
 	extractedPayload.header.extSize = binary.LittleEndian.Uint16(bs)
 
 	bs = make([]byte, extractedPayload.header.extSize)
-	buf.Read(bs)
+	r.Read(bs)
 	extractedPayload.header.fileExtension = string(bs)
 
-	bs = make([]byte, extractedPayload.header.size)
-	buf.Read(bs)
-	extractedPayload.data = bs
+	chunk := make([]byte, 1024)
+	for {
+		n, err := r.Read(chunk)
+		chunk = chunk[:n]
+		extractedPayload.data = append(extractedPayload.data, chunk...)
+		if err == io.EOF {
+			break
+		}
+	}
+	r.Close()
 
 	return extractedPayload, nil
 }
@@ -79,7 +126,9 @@ func (p *Payload) WriteFile() error {
 	}
 	defer f.Close()
 
-	_, err = f.Write(p.data)
+	w := bufio.NewWriter(f)
+	_, err = w.Write(p.data)
+	w.Flush()
 	if err != nil {
 		return err
 	}
@@ -100,15 +149,20 @@ func (p *Payload) InsertPayload(myImage img.Img) error {
 		return err
 	}
 
-	availableBits := int(float64(len(imageData)) * (8. / float64(bitDepth)))
-	payloadBitsSize := len(payloadData) * 8
-
 	if bitDepth != 8 && bitDepth != 16 {
 		return ErrUnsupportedBitDepth
 	}
-	if availableBits < payloadBitsSize {
+
+	availableBits := int(float64(len(imageData))*(8./float64(bitDepth))) / 8
+	payloadSize := len(payloadData)
+	fmt.Fprintln(os.Stderr, "payload size: ", payloadSize)
+	fmt.Fprintln(os.Stderr, "available space on image: ", availableBits)
+
+	if availableBits < payloadSize {
 		return ErrPayloadSize
 	}
+
+	fmt.Fprintf(os.Stderr, "used space: %.3f %%", float64(len(payloadData))/float64(availableBits)*100)
 
 	k := 0
 	for i := 0; i < len(payloadData); i++ {
