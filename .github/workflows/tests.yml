@@ -14,7 +14,6 @@ jobs:
   unittest:
     name: Go test
     runs-on: ubuntu-latest
-    needs: build
     defaults:
       run:
         working-directory: ./source
