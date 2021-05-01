@@ -1,0 +1,36 @@
+{
+  "header": {
+    "signature": "iVBORw0KGgo="
+  },
+  "chunks": [
+    {
+      "size": 13,
+      "chunk_type": "IHDR",
+      "data": "AAAAIAAAACAIAwAAAA==",
+      "crc": 1151634118
+    },
+    {
+      "size": 4,
+      "chunk_type": "gAMA",
+      "data": "AAGGoA==",
+      "crc": 837326431
+    },
+    {
+      "size": 768,
+      "chunk_type": "PLTE",
+      "data": "IkQA9f/td/93y///EQoAOncAIiL//xH/EQAAIiIA/6xVZv9m/2Zm/wH/IhIA3P//zP+ZRET/AFVVIgAAy8v/REQAVf9Vy8sAMxoA/+zc7f//5P/L/9zcRP9EZmb/MwAARCIA7e3/ZmYA/6RE//+q7e0AAMvL/v///f/+//8BM/8zVSoAAQH/iIj/AKqqAQEARAAAiIgA/+TLulsAIv8iZjIA//+Zqqr/VQAAqqoAy2MAEf8R1P+qdzoA/0RE3GsAZgAAAf8BiEIA7P/ca9wA/9y6ADMzAO0A7XMA//+ImUoAEf//dwAA/4MB/7q6/nsA//7/AMsA/5mZIv//iAAA//93AIiI/9z/GjMAAACqM///AJkAmQAAAAABMmYA/7r/RP///6r/AHcAAP7+qgAASpkA//9m/yIiAACZi/8RVf///wEB/4j/AFUAABER///+//3+pP9EZv///2b/ADMA//9V/3d3AACI/0T/ABEAd///AGZm///tAAEA//XtERH///9E/yL//+3tEREAiP//AAB3k/8iANzcMzP//gD+urr/mf//MzMAY8sAuroArP9V///c//8ze/4A7QDtVVX/qv//3Nz/VVUAAABm3NwA3ADcg/8Bd3f//v7////L/1VVd3cA/v4AywDLAAD+AQIAAQAAEiIA//8iAEREm/8z/9SqAABVmZn/mZkAugC6KlUA/8vLtP9m/5sz//+6qgCqQogAU6oA/6qqAADtALq6//8RAP4AAABEAJmZmQCZ/8yZugAAiACIANwA/5MiAADc/v/+qlMAdwB3AgEAywAAAAAz/+3/ALoA/zMz7f/t/8SIvP93AKoAZgBmACIi3AAA/8v/3P/c/4sRAADLAAEBVQBVAIgAAAAiAf//y//L7QAA/4iIRABEW7oA/7x3/5n/AGYAuv+6AHd3c+0A/gAAMwAzAAC6/3f/AEQAqv+q//7+AAARIgAixP+IAO3tmf+Z/1X/ACIA/7RmEQARChEA/xER3P+6uv//iP+IAQAB/zP/",
+      "crc": 3113145186
+    },
+    {
+      "size": 433,
+      "chunk_type": "IDAT",
+      "data": "eJwNwQcACAQQAMBHqIxIZCs7Mwlla1hlZ+8VitCw9yoqNGiYDatsyt6jjIadlVkysve+u5jC9xTmV/qyl6bcJR7kAQZzg568xXmuE2lIyUNM5So7OMAFIhvp+YgGvEtFNnOKeJonSEvwP9NZzhHiOfLzBXPoxKP8yD6iPMXITjP+oTdfsp14lTJMJjGtOMFQfiFe4wWK8BP7qUd31hBNqMos2tKYFbRnJdGGjTzPz2yjEA1ZSKymKCM5ylaWcJrZxCZK8jgfU4vc/MW3xE7K8RUvsZb3Wc/XxCEqk4v/qMQlFvMZcZIafMOnLKM13zGceJNqPMU4KnCQAqQgbrKHpXSgFK/Qn6REO9YxjWE8Sx2SMJD4jfl8wgzy0YgPuEeUJQcD6EoWWpCaHsQkHuY9RpGON/icK0RyrvE680jG22TlHaIbx6jLnySkF+M5QxzmD6pwkTsMoSAdidqsojipuMyHzOQ4sYgfyElpzjKGErQkqvMyC7jFv9xmBM2JuTzDRDLxN4l4jF1EZjIwmhfZzSOMpT4xiH70IQG/k5En2UKcowudycsG8jCBmtwHgRv+EA==",
+      "crc": 2274805984
+    },
+    {
+      "size": 0,
+      "chunk_type": "IEND",
+      "crc": 2923585666
+    }
+  ]
+}
