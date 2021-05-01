@@ -1,5 +1,7 @@
 # SteganoGo
-
+[![Build](https://github.com/Mihai22125/SteganoGo/actions/workflows/Build.yml/badge.svg)](https://github.com/Mihai22125/SteganoGo/actions/workflows/Build.yml)
+[![Tests](https://github.com/Mihai22125/SteganoGo/actions/workflows/tests.yml/badge.svg)](https://github.com/Mihai22125/SteganoGo/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/Mihai22125/URLShortenerAPI/branch/main/graph/badge.svg?token=OASAGF80FE)](https://codecov.io/gh/Mihai22125/URLShortenerAPI)
 
 ## Overview
 `steganoGo` is a simple CLI capable of hiding any file within an PNG image.
