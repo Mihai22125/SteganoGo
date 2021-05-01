@@ -2,7 +2,6 @@ package pngint
 
 import (
 	"encoding/binary"
-	"fmt"
 	"log"
 	"os"
 
@@ -86,13 +85,14 @@ func (pngImg *PngImage) samplesPerPixel() uint8 {
 
 // stride return bytes per row from png image
 func (pngImg *PngImage) stride() uint32 {
+	//fmt.Fprintln(os.Stderr, "[stride]: width = ", pngImg.meta.width, " bpp = ", pngImg.bytesPerPixel(), " stride = ", pngImg.meta.width*uint32(pngImg.bytesPerPixel()))
 	return pngImg.meta.width * uint32(pngImg.bytesPerPixel())
 }
 
 // Unfilter
 func (pngImg *PngImage) Unfilter(decompressed []byte) error {
 
-	filterer := newFilterer(pngImg.bytesPerPixel(), uint8(pngImg.stride()), pngImg.meta.height, pngImg.meta.bitDepth)
+	filterer := newFilterer(pngImg.bytesPerPixel(), uint16(pngImg.stride()), pngImg.meta.height, pngImg.meta.bitDepth)
 
 	// defilter uncompressed data
 	err := filterer.reconstruct(decompressed)
@@ -100,7 +100,6 @@ func (pngImg *PngImage) Unfilter(decompressed []byte) error {
 		return err
 	}
 	defiltered := filterer.recon
-
 	// assign processed data to png struct
 	pngImg.data = defiltered
 	return nil
@@ -126,7 +125,7 @@ func (pngImg *PngImage) ProcessData(stpng *png.StructPNG) error {
 		return err
 	}
 
-	fmt.Println(pngImg.data)
+	//fmt.Fprintln(os.Stderr, pngImg.data)
 
 	return nil
 }

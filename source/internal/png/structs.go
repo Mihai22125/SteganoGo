@@ -18,3 +18,16 @@ type PngImage struct {
 	data []uint8
 	png  png.StructPNG
 }
+
+func (p *PngImage) GetData() ([]byte, error) {
+	return p.data, nil
+}
+
+func (p *PngImage) UpdateData(newImageData []byte) error {
+	p.data = newImageData
+	return nil
+}
+
+func (p *PngImage) GetBitDepth() int {
+	return int(p.meta.bitDepth)
+}

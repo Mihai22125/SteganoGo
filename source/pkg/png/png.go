@@ -54,10 +54,7 @@ func parsePNG(r *bytes.Reader) (StructPNG, error) {
 
 // checkPNG: returns true if the header is a known PNG header and false otherwise
 func checkPNG(header []byte) bool {
-	if bytes.Equal(header, pngHeader) {
-		return true
-	}
-	return false
+	return bytes.Equal(header, pngHeader)
 }
 
 // readSingleChunck read the next chunk from png data
@@ -115,7 +112,7 @@ func readChunks(r *bytes.Reader) ([]Chunk, error) {
 // IHDRChunk returns png IHDR chunk
 func (p StructPNG) IHDRChunk() (Chunk, error) {
 	for _, chunk := range p.Chunks() {
-		if chunk.CompareType(TypeIHDR) == true {
+		if chunk.CompareType(TypeIHDR) {
 			return chunk, nil
 		}
 	}
@@ -127,7 +124,7 @@ func (p StructPNG) IDATChunks() ([]Chunk, error) {
 	idat := []Chunk{}
 
 	for _, chunk := range p.Chunks() {
-		if chunk.CompareType(TypeIDAT) == true {
+		if chunk.CompareType(TypeIDAT) {
 			idat = append(idat, chunk)
 		}
 	}
@@ -156,7 +153,6 @@ func (p *StructPNG) IDATdata() ([]byte, error) {
 
 func (p *StructPNG) UpdateIdatChunks(newIDATChunks []Chunk) {
 	var beforeIDAT, afterIDAT []Chunk
-
 	i := 0
 
 	for i = 0; i < len(p.chunks); i++ {
